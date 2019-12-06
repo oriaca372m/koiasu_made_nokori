@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.3.2/moment-duration-format.min.js" integrity="sha256-M2KULKSJyw+G0068JiMlM9GX4XpLdUButSzBqntKDZM=" crossorigin="anonymous"></script>
+
+		<script type="text/javascript">
+			"use strict";
+
+			function generate_text(from_moment, to_moment) {
+				const diff_duration = moment.duration(to_moment.diff(from_moment));
+				if (diff_duration.asMilliseconds() < 0) {
+					return '放送開始';
+				}
+				return diff_duration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
+			}
+
+			const targetDay = moment('2020-01-03T20:30:00');
+
+			document.addEventListener('DOMContentLoaded', (e) => {
+				const display = document.getElementById('time-display');
+
+				window.setInterval(() => {
+					display.textContent = generate_text(moment(), targetDay);
+				}, 10);
+
+				document.getElementById('tweet').addEventListener('click', (e) => {
+					const msg = '恋する小惑星まで残り' + generate_text(moment(), targetDay);
+					window.open().location.href = ("https://twitter.com/share?url=" + '[my_home_url]' + "&text=" + msg + "&count=none&lang=ja");
+				});
+			});
+		</script>
+
+		<title>恋する小惑星まで残り</title>
+	</head>
+	<body>
+		<h1>恋する小惑星まで残り</h1>
+		<p id="time-display" style="font-size: 50px; text-align: center;"></p>
+		<button type="button" id="tweet">ツイート</button>
+	</body>
+</html>
