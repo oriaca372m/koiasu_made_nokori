@@ -20,7 +20,16 @@
 				return diff_duration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
 			}
 
-			const targetDay = moment('2020-01-03T20:30:00');
+			const targetDayTable = {
+				atx: moment('2020-01-03T20:30:00'),
+				tokyomx: moment('2020-01-03T23:00:00'),
+				suntv: moment('2020-01-03T24:00:00'),
+				kbskyoto: moment('2020-01-03T24:00:00'),
+				tvaichi: moment('2020-01-11T03:05:00'),
+				bs11: moment('2020-01-11T23:00:00')
+			};
+
+			let targetDay = targetDayTable.atx;
 
 			document.addEventListener('DOMContentLoaded', (e) => {
 				const display = document.getElementById('time-display');
@@ -28,6 +37,10 @@
 				window.setInterval(() => {
 					display.textContent = generate_text(moment(), targetDay);
 				}, 10);
+
+				document.getElementById('channel').addEventListener('change', (e) => {
+					targetDay = targetDayTable[e.target.value];
+				});
 
 				document.getElementById('tweet').addEventListener('click', (e) => {
 					const msg = '恋する小惑星まで残り' + generate_text(moment(), targetDay);
@@ -43,7 +56,14 @@
 	</head>
 	<body>
 		<h1>恋する小惑星まで残り</h1>
-		<p>(AT-X)</p>
+		<select id="channel" style="font-size: 25px;">
+			<option value="atx">AT-X</option>
+			<option value="tokyomx">TOKYO MX</option>
+			<option value="suntv">サンテレビ</option>
+			<option value="kbskyoto">KBS京都</option>
+			<option value="tvaichi">テレビ愛知</option>
+			<option value="bs11">BS11</option>
+		</select>
 		<p id="time-display" style="font-size: 50px; text-align: center;"></p>
 		<button type="button" id="tweet" style="font-size: 25px;">ツイート</button>
 	</body>
