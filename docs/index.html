@@ -27,6 +27,12 @@
 				return time_left_msg;
 			}
 
+			function generate_channel_url(channel) {
+				let url = new URL('https://oriaca372m.github.io/koiasu_made_nokori/');
+				url.searchParams.append('channel', channel);
+				return url.toString();
+			}
+
 			const targetTable = new Map([
 				['atx', {
 					name: 'AT-X',
@@ -56,6 +62,14 @@
 
 			let targetId = 'atx';
 
+			{
+				const params = new URLSearchParams(window.location.search);
+				const channel = params.get('channel');
+				if (channel !== null && targetTable.has(channel)) {
+					targetId = channel;
+				}
+			}
+
 			document.addEventListener('DOMContentLoaded', (e) => {
 				const display = document.getElementById('time-display');
 
@@ -68,8 +82,11 @@
 					channel.appendChild(elm);
 				}
 
+				channel.value = targetId;
+
 				channel.addEventListener('change', (e) => {
 					targetId = e.target.value;
+					window.history.replaceState(null, null, generate_channel_url(targetId));
 				});
 
 				window.setInterval(() => {
@@ -79,7 +96,7 @@
 				document.getElementById('tweet').addEventListener('click', (e) => {
 					let url = new URL('https://twitter.com/intent/tweet');
 					url.searchParams.append('text', generate_text(moment(), targetTable.get(targetId), true));
-					url.searchParams.append('url', 'https://oriaca372m.github.io/koiasu_made_nokori/');
+					url.searchParams.append('url', generate_channel_url(targetId));
 					window.open().location.href = (url.toString());
 				});
 			});
