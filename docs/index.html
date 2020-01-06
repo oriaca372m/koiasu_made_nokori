@@ -12,12 +12,19 @@
 		<script type="text/javascript">
 			"use strict";
 
-			function generate_text(from_moment, to_moment) {
-				const diff_duration = moment.duration(to_moment.diff(from_moment));
+			function generate_text(now, target, is_tweet = false) {
+				const diff_duration = moment.duration(target.time.diff(now));
 				if (diff_duration.asMilliseconds() < 0) {
+					if (is_tweet) {
+						return `恋する小惑星は放送開始しました! (${target.name})`;
+					}
 					return '放送開始';
 				}
-				return diff_duration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
+				const time_left_msg = diff_duration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
+				if (is_tweet) {
+					return `恋する小惑星まで残り ${time_left_msg} (${target.name})`;
+				}
+				return time_left_msg;
 			}
 
 			const targetTable = new Map([
@@ -47,7 +54,7 @@
 				}]
 			]);
 
-			let target = 'atx';
+			let targetId = 'atx';
 
 			document.addEventListener('DOMContentLoaded', (e) => {
 				const display = document.getElementById('time-display');
@@ -62,19 +69,17 @@
 				}
 
 				channel.addEventListener('change', (e) => {
-					target = e.target.value;
+					targetId = e.target.value;
 				});
 
 				window.setInterval(() => {
-					display.textContent = generate_text(moment(), targetTable.get(target).time);
+					display.textContent = generate_text(moment(), targetTable.get(targetId));
 				}, 10);
 
 				document.getElementById('tweet').addEventListener('click', (e) => {
-					const data = targetTable.get(target)
-					const msg = `恋する小惑星まで残り ${generate_text(moment(), data.time)} (${data.name})`;
 					let url = new URL('https://twitter.com/intent/tweet');
-					url.searchParams.append('text', msg)
-					url.searchParams.append('url', 'https://oriaca372m.github.io/koiasu_made_nokori/')
+					url.searchParams.append('text', generate_text(moment(), targetTable.get(targetId), true));
+					url.searchParams.append('url', 'https://oriaca372m.github.io/koiasu_made_nokori/');
 					window.open().location.href = (url.toString());
 				});
 			});
