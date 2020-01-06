@@ -97,7 +97,7 @@
 					let url = new URL('https://twitter.com/intent/tweet');
 					url.searchParams.append('text', generate_text(moment(), targetTable.get(targetId), true));
 					url.searchParams.append('url', generate_channel_url(targetId));
-					window.open().location.href = (url.toString());
+					window.open().location.href = url.toString();
 				});
 			});
 		</script>
