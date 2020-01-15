@@ -12,8 +12,8 @@
 		<script type="text/javascript">
 			"use strict";
 
-			function generate_text(now, target) {
-				let start_time;
+			function generateText(now, target) {
+				let startTime;
 				let episodeNumber;
 				let isAfterFinalEpisode = true;
 
@@ -21,8 +21,8 @@
 					if (now.isBefore(target.time[i])) {
 						isAfterFinalEpisode = false;
 						episodeNumber = i + 1;
-						start_time = target.time[i];
-						break
+						startTime = target.time[i];
+						break;
 					}
 				}
 
@@ -34,41 +34,42 @@
 					};
 				}
 
-				const diff_duration = moment.duration(start_time.diff(now));
-				const time_left_msg = diff_duration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
+				const diffDuration = moment.duration(startTime.diff(now));
+				const timeLeftMsg = diffDuration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true });
 
 				if (episodeNumber === 1) {
 					return {
-						main: time_left_msg,
+						main: timeLeftMsg,
 						sub: '',
-						tweet: `恋する小惑星まで残り ${time_left_msg} (${target.name})`
+						tweet: `恋する小惑星まで残り ${timeLeftMsg} (${target.name})`
 					};
 				}
 
 				return {
 					main: `放送開始`,
-					sub: `${episodeNumber}話まで残り ${time_left_msg}`,
-					tweet: `恋する小惑星は放送開始しました! ${episodeNumber}話まで残り ${time_left_msg} (${target.name})`
+					sub: `${episodeNumber}話まで残り ${timeLeftMsg}`,
+					tweet: `恋する小惑星は放送開始しました! ${episodeNumber}話まで残り ${timeLeftMsg} (${target.name})`
 				};
 			}
 
-			function generate_channel_url(channel) {
+			function generateChannelUrl(channel) {
 				let url = new URL('https://oriaca372m.github.io/koiasu_made_nokori/');
 				url.searchParams.append('channel', channel);
 				return url.toString();
 			}
 
 			function generateTimeTable(targetTable, finalEpisode) {
-				const retTable = new Map()
+				const retTable = new Map();
 
 				for (const [key, value] of targetTable) {
 					const time = [];
+					const vtime = value.time
 
-					let oldTime = value.time.get(1);
+					let oldTime = vtime.get(1);
 					time.push(oldTime);
 
 					for (let i = 2; i <= finalEpisode; i++) {
-						const currentTime = value.time.has(i) ? value.time.get(i) : oldTime.clone().add(7, 'd');
+						const currentTime = vtime.has(i) ? vtime.get(i) : oldTime.clone().add(7, 'd');
 
 						time.push(currentTime);
 						oldTime = currentTime;
@@ -152,19 +153,19 @@
 
 				channel.addEventListener('change', (e) => {
 					targetId = e.target.value;
-					window.history.replaceState(null, null, generate_channel_url(targetId));
+					window.history.replaceState(null, null, generateChannelUrl(targetId));
 				});
 
 				window.setInterval(() => {
-					const text = generate_text(moment(), timeTable.get(targetId));
+					const text = generateText(moment(), timeTable.get(targetId));
 					display.textContent = text.main;
 					subdisplay.textContent = text.sub;
 				}, 10);
 
 				document.getElementById('tweet').addEventListener('click', (e) => {
 					let url = new URL('https://twitter.com/intent/tweet');
-					url.searchParams.append('text', generate_text(moment(), timeTable.get(targetId)).tweet);
-					url.searchParams.append('url', generate_channel_url(targetId));
+					url.searchParams.append('text', generateText(moment(), timeTable.get(targetId)).tweet);
+					url.searchParams.append('url', generateChannelUrl(targetId));
 					url.searchParams.append('hashtags', 'koias');
 					window.open().location.href = url.toString();
 				});
