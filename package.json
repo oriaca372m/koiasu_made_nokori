@@ -1,0 +1,20 @@
+{
+  "name": "koiasu_made_nokori",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack"
+  },
+  "private": true,
+  "repository": "git@github.com:oriaca372m/koiasu_made_nokori.git",
+  "author": "oriaca <oriaca372m@outlook.jp>",
+  "license": "MIT",
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "moment": "^2.24.0",
+    "moment-duration-format": "^2.3.2"
+  }
+}
