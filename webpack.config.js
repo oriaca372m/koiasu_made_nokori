@@ -19,6 +19,9 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.ejs',
+			templateParameters: {
+				siteConfig: require('./src/site-config.json')
+			},
 			inject: 'head'
 		})
 	]

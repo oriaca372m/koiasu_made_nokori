@@ -1,6 +1,8 @@
 import moment from 'moment'
 import 'moment-duration-format'
 
+import config from './site-config-runtime.js'
+
 function generateText(now, target) {
 	let startTime
 	let episodeNumber
@@ -19,7 +21,7 @@ function generateText(now, target) {
 		return {
 			main: '放送終了',
 			sub: '',
-			tweet: `恋する小惑星の放送は終了しました。 (${target.name})`
+			tweet: `${config.title}の放送は終了しました。 (${target.name})`
 		}
 	}
 
@@ -30,19 +32,19 @@ function generateText(now, target) {
 		return {
 			main: timeLeftMsg,
 			sub: '',
-			tweet: `恋する小惑星まで残り ${timeLeftMsg} (${target.name})`
+			tweet: `${config.title}まで残り ${timeLeftMsg} (${target.name})`
 		}
 	}
 
 	return {
 		main: '放送開始',
 		sub: `${episodeNumber}話まで残り ${timeLeftMsg}`,
-		tweet: `恋する小惑星は放送開始しました! ${episodeNumber}話まで残り ${timeLeftMsg} (${target.name})`
+		tweet: `${config.title}は放送開始しました! ${episodeNumber}話まで残り ${timeLeftMsg} (${target.name})`
 	}
 }
 
 function generateChannelUrl(channel) {
-	let url = new URL('https://oriaca372m.github.io/koiasu_made_nokori/')
+	let url = new URL(config.publishedUrl)
 	url.searchParams.append('channel', channel)
 	return url.toString()
 }
@@ -70,52 +72,10 @@ function generateTimeTable(targetTable, finalEpisode) {
 	return retTable
 }
 
-const targetTable = new Map([
-	['atx', {
-		name: 'AT-X',
-		time: new Map([
-			[1, moment('2020-01-03T20:30:00')]
-		])
-	}],
-	['tokyomx', {
-		name: 'TOKYO MX',
-		time: new Map([
-			[1, moment('2020-01-03T23:00:00')],
-			[2, moment('2020-01-10T22:30:00')]
-		])
-	}],
-	['suntv', {
-		name: 'サンテレビ',
-		time: new Map([
-			[1, moment('2020-01-03T24:00:00')]
-		])
-	}],
-	['kbskyoto', {
-		name: 'KBS京都',
-		time: new Map([
-			[1, moment('2020-01-03T24:00:00')]
-		])
-	}],
-	['tvaichi', {
-		name: 'テレビ愛知',
-		time: new Map([
-			[1, moment('2020-01-11T03:05:00')],
-			[2, moment('2020-01-11T03:35:00')],
-			[3, moment('2020-01-18T03:05:00')]
-		])
-	}],
-	['bs11', {
-		name: 'BS11',
-		time: new Map([
-			[1, moment('2020-01-03T23:00:00')]
-		])
-	}]
-])
+const targetTable = config.targetTable
+const timeTable = generateTimeTable(targetTable, config.finalEpisode)
 
-const finalEpisode = 12
-const timeTable = generateTimeTable(targetTable, finalEpisode)
-
-let targetId = 'atx'
+let targetId = config.defaultTargetId
 
 {
 	const params = new URLSearchParams(window.location.search)
@@ -155,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		let url = new URL('https://twitter.com/intent/tweet')
 		url.searchParams.append('text', generateText(moment(), timeTable.get(targetId)).tweet)
 		url.searchParams.append('url', generateChannelUrl(targetId))
-		url.searchParams.append('hashtags', 'koias')
+		url.searchParams.append('hashtags', config.hashtags)
 		window.open().location.href = url.toString()
 	})
 })
