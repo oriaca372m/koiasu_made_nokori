@@ -7,6 +7,15 @@ module.exports = {
 		filename: 'main.js',
 		path: path.resolve(__dirname, 'dist')
 	},
+	module: {
+		rules: [
+			{
+				test: /\.js$/,
+				exclude: /node_modules/,
+				loader: 'eslint-loader'
+			}
+		]
+	},
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.ejs',
