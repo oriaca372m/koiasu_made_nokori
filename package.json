@@ -2,7 +2,8 @@
   "name": "koiasu_made_nokori",
   "version": "1.0.0",
   "scripts": {
-    "build": "webpack --mode=development"
+    "build": "webpack --mode=development",
+    "release": "webpack --mode=production"
   },
   "private": true,
   "repository": "git@github.com:oriaca372m/koiasu_made_nokori.git",
