@@ -5,7 +5,7 @@ import siteConfig from './site-config.json'
 export default {
 	...siteConfig,
 	finalEpisode: 12,
-	targetTable: new Map([
+	channels: new Map([
 		['atx', {
 			name: 'AT-X',
 			time: new Map([
@@ -46,5 +46,5 @@ export default {
 			])
 		}]
 	]),
-	defaultTargetId: 'atx'
+	defaultChannelId: 'atx'
 }

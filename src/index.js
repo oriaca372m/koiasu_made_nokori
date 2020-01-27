@@ -3,16 +3,16 @@ import 'moment-duration-format'
 
 import config from './site-config-runtime.js'
 
-function generateText(now, target) {
+function generateText(now, channel) {
 	let startTime
 	let episodeNumber
 	let isAfterFinalEpisode = true
 
-	for (let i = 0; i < target.time.length; i++) {
-		if (now.isBefore(target.time[i])) {
+	for (let i = 0; i < channel.time.length; i++) {
+		if (now.isBefore(channel.time[i])) {
 			isAfterFinalEpisode = false
 			episodeNumber = i + 1
-			startTime = target.time[i]
+			startTime = channel.time[i]
 			break
 		}
 	}
@@ -21,7 +21,7 @@ function generateText(now, target) {
 		return {
 			main: '放送終了',
 			sub: '',
-			tweet: `${config.title}の放送は終了しました。 (${target.name})`
+			tweet: `${config.title}の放送は終了しました。 (${channel.name})`
 		}
 	}
 
@@ -32,14 +32,14 @@ function generateText(now, target) {
 		return {
 			main: timeLeftMsg,
 			sub: '',
-			tweet: `${config.title}まで残り ${timeLeftMsg} (${target.name})`
+			tweet: `${config.title}まで残り ${timeLeftMsg} (${channel.name})`
 		}
 	}
 
 	return {
 		main: '放送開始',
 		sub: `${episodeNumber}話まで残り ${timeLeftMsg}`,
-		tweet: `${config.title}は放送開始しました! ${episodeNumber}話まで残り ${timeLeftMsg} (${target.name})`
+		tweet: `${config.title}は放送開始しました! ${episodeNumber}話まで残り ${timeLeftMsg} (${channel.name})`
 	}
 }
 
@@ -49,10 +49,10 @@ function generateChannelUrl(channel) {
 	return url.toString()
 }
 
-function generateTimeTable(targetTable, finalEpisode) {
+function generateTimeTable(channels, finalEpisode) {
 	const retTable = new Map()
 
-	for (const [key, value] of targetTable) {
+	for (const [key, value] of channels) {
 		const time = []
 		const vtime = value.time
 
@@ -72,16 +72,14 @@ function generateTimeTable(targetTable, finalEpisode) {
 	return retTable
 }
 
-const targetTable = config.targetTable
-const timeTable = generateTimeTable(targetTable, config.finalEpisode)
-
-let targetId = config.defaultTargetId
+const timeTable = generateTimeTable(config.channels, config.finalEpisode)
+let channelId = config.defaultChannelId
 
 {
 	const params = new URLSearchParams(window.location.search)
 	const channel = params.get('channel')
-	if (channel !== null && targetTable.has(channel)) {
-		targetId = channel
+	if (channel !== null && config.channels.has(channel)) {
+		channelId = channel
 	}
 }
 
@@ -91,30 +89,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const channel = document.getElementById('channel')
 
-	for (const [key, value] of targetTable) {
+	for (const [key, value] of config.channels) {
 		const elm = document.createElement('option')
 		elm.setAttribute('value', key)
 		elm.appendChild(document.createTextNode(value.name))
 		channel.appendChild(elm)
 	}
 
-	channel.value = targetId
+	channel.value = channelId
 
 	channel.addEventListener('change', (e) => {
-		targetId = e.target.value
-		window.history.replaceState(null, null, generateChannelUrl(targetId))
+		channelId = e.target.value
+		window.history.replaceState(null, null, generateChannelUrl(channelId))
 	})
 
 	window.setInterval(() => {
-		const text = generateText(moment(), timeTable.get(targetId))
+		const text = generateText(moment(), timeTable.get(channelId))
 		display.textContent = text.main
 		subdisplay.textContent = text.sub
 	}, 10)
 
 	document.getElementById('tweet').addEventListener('click', () => {
 		let url = new URL('https://twitter.com/intent/tweet')
-		url.searchParams.append('text', generateText(moment(), timeTable.get(targetId)).tweet)
-		url.searchParams.append('url', generateChannelUrl(targetId))
+		url.searchParams.append('text', generateText(moment(), timeTable.get(channelId)).tweet)
+		url.searchParams.append('url', generateChannelUrl(channelId))
 		url.searchParams.append('hashtags', config.hashtags)
 		window.open().location.href = url.toString()
 	})
