@@ -4,15 +4,14 @@ import 'moment-duration-format'
 import config from './site-config-runtime.js'
 
 function generateText(now, channel) {
-	let startTime
 	let episodeNumber
 	let isAfterFinalEpisode = true
+	const episodeLength = moment.duration(30, 'minutes')
 
 	for (let i = 0; i < channel.time.length; i++) {
 		if (now.isBefore(channel.time[i])) {
 			isAfterFinalEpisode = false
 			episodeNumber = i + 1
-			startTime = channel.time[i]
 			break
 		}
 	}
@@ -25,7 +24,7 @@ function generateText(now, channel) {
 		}
 	}
 
-	const diffDuration = moment.duration(startTime.diff(now))
+	const diffDuration = moment.duration(channel.time[episodeNumber - 1].diff(now))
 	const timeLeftMsg = diffDuration.format('Y年Mヶ月D日hh時間mm分ss.SS秒', { trim: true })
 
 	if (episodeNumber === 1) {
@@ -33,6 +32,14 @@ function generateText(now, channel) {
 			main: timeLeftMsg,
 			sub: '',
 			tweet: `${config.title}まで残り ${timeLeftMsg} (${channel.name})`
+		}
+	}
+
+	if (now.isBefore(channel.time[episodeNumber - 2].clone().add(episodeLength))) {
+		return {
+			main: `${episodeNumber}話 放送中`,
+			sub: '',
+			tweet: `${config.title}は放送開始しました! ${episodeNumber}話が放送中です! (${channel.name})`
 		}
 	}
 
