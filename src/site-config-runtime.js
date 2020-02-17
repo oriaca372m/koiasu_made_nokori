@@ -4,7 +4,21 @@ import siteConfig from './site-config.json'
 
 export default {
 	...siteConfig,
-	finalEpisode: 12,
+	episodes: [
+		'1話 「二人の約束」',
+		'2話 「河原の天の川」',
+		'3話 「思い出はたからもの」',
+		'4話 「わくわく! 夏合宿!」',
+		'5話 「それぞれの夏休み」',
+		'6話 「星咲祭!」',
+		'6.5話 「振り返り KiraKira特別号」',
+		'7話 「星空はタイムマシン」',
+		'8話',
+		'9話',
+		'10話',
+		'11話',
+		'12話',
+	],
 	channels: new Map([
 		['atx', {
 			name: 'AT-X',
